@@ -1,0 +1,137 @@
+Practical 2(LED)
+Code:-
+
+import RPi.GPIO as GPIO
+import time
+
+# Setup
+GPIO.setmode(GPIO.BCM)  # Use BCM GPIO numbering
+GPIO.setwarnings(False)
+
+# Define GPIO pins for the LEDs
+led_pins = [17, 18, 27, 22]
+
+# Set all LED pins as output
+for pin in led_pins:
+    GPIO.setup(pin, GPIO.OUT)
+
+# Pattern 1: Blink one LED at a time
+def pattern_1():
+    for pin in led_pins:
+        GPIO.output(pin, GPIO.HIGH)  # Turn LED on
+        time.sleep(0.5)
+        GPIO.output(pin, GPIO.LOW)   # Turn LED off
+        time.sleep(0.5)
+
+# Pattern 2: All LEDs ON, then all OFF
+def pattern_2():
+    for pin in led_pins:
+        GPIO.output(pin, GPIO.HIGH)  # All LEDs on
+    time.sleep(1)
+    for pin in led_pins:
+        GPIO.output(pin, GPIO.LOW)   # All LEDs off
+    time.sleep(1)
+
+# Pattern 3: Toggle one by one (On-Off for each LED)
+def pattern_3():
+    for pin in led_pins:
+        GPIO.output(pin, GPIO.HIGH)  # Turn LED on
+        time.sleep(0.5)
+        GPIO.output(pin, GPIO.LOW)   # Turn LED off
+        time.sleep(0.5)
+
+# Pattern 4: Toggle all LEDs simultaneously
+def pattern_4():
+    for pin in led_pins:
+        GPIO.output(pin, GPIO.HIGH)  # Turn all LEDs on
+    time.sleep(0.5)
+    for pin in led_pins:
+        GPIO.output(pin, GPIO.LOW)   # Turn all LEDs off
+    time.sleep(0.5)
+
+# Main function to run the patterns
+try:
+    while True:
+        print("Pattern 1: Blink one LED at a time")
+        pattern_1()
+        
+        print("Pattern 2: All LEDs ON, then all OFF")
+        pattern_2()
+        
+        print("Pattern 3: Toggle LEDs one by one")
+        pattern_3()
+        
+        print("Pattern 4: Toggle all LEDs simultaneously")
+        pattern_4()
+
+except KeyboardInterrupt:
+    print("Exiting program")
+
+finally:
+    GPIO.cleanup()  # Clean up GPIO on exit
+
+Practical 3(4digit)
+import RPi.GPIO as GPIO
+import time
+from datetime import datetime
+
+# GPIO setup
+GPIO.setmode(GPIO.BCM)
+segments = [2, 3, 4, 17, 27, 22, 10] # Adjust these pins as per your wiring
+digits = [11, 5, 6, 13] # Adjust these pins as per your wiring
+
+# Set up segment pins
+for seg in segments:
+    GPIO.setup(seg, GPIO.OUT)
+    GPIO.output(seg, 0)
+
+# Set up digit control pins
+for digit in digits:
+    GPIO.setup(digit, GPIO.OUT)
+    GPIO.output(digit, 1)
+
+# Segment configurations for numbers 0-9
+number_map = {
+    '0': (1, 1, 1, 1, 1, 1, 0),
+    '1': (0, 1, 1, 0, 0, 0, 0),
+    '2': (1, 1, 0, 1, 1, 0, 1),
+    '3': (1, 1, 1, 1, 0, 0, 1),
+    '4': (0, 1, 1, 0, 0, 1, 1),
+    '5': (1, 0, 1, 1, 0, 1, 1),
+    '6': (1, 0, 1, 1, 1, 1, 1),
+    '7': (1, 1, 1, 0, 0, 0, 0),
+    '8': (1, 1, 1, 1, 1, 1, 1),
+    '9': (1, 1, 1, 1, 0, 1, 1),
+}
+
+def display_digit(digit_index, num):
+    # Turn off all digit pins
+    for d in digits:
+        GPIO.output(d, 1)
+    
+    # Set segments for the current number
+    seg_values = number_map.get(num, (0, 0, 0, 0, 0, 0, 0))
+    for i in range(7):
+        GPIO.output(segments[i], seg_values[i])
+    
+    # Enable the selected digit
+    GPIO.output(digits[digit_index], 0)
+    time.sleep(0.001) # Small delay to stabilize the display
+    GPIO.output(digits[digit_index], 1)
+
+try:
+    while True:
+        # Get current time in HHMM format
+        current_time = datetime.now().strftime("%H%M")
+        
+        # Display each digit on the 4-digit display
+        for i, digit in enumerate(current_time):
+            display_digit(i, digit)
+            time.sleep(0.005) # Short delay between digits for multiplexing
+
+except KeyboardInterrupt:
+    pass
+
+finally:
+    GPIO.cleanup()
+
