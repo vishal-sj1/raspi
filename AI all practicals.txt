@@ -1,0 +1,594 @@
+﻿Practical no:1
+
+
+A]Aim:Write a program to implement the BFS(Breadth First Search) algorithm.
+Code:
+graph = {'5':['3','7'],'3':['2','4'],'7':['8'],'2':[],'4':['8'],'8':[]}
+visited = []
+q = []
+def bfs(graph,visited,node):
+    visited.append(node)
+    q.append(node)
+    while q:
+        m=q.pop(0)
+        print(m)
+        for i in graph[m]:
+            if i not in visited:
+                visited.append(i)
+                q.append(i)
+bfs(graph,visited,'5')
+
+
+B]Aim:Write a program to implement the DFS(Depth First Search)algorithm.
+Code:
+graph={'5':['3','7'],'3':['2','4'],'7':['8'],'2':[],'4':['8'],'8':[]}
+visited=set()
+def dfs(graph,visited,node):
+    if node not in visited:
+        print(node)
+        visited.add(node)
+    for ne in graph[node]:
+        dfs(graph,visited,ne)
+dfs(graph,visited,'5') 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Practical 2
+Aim : Write a program to implement the TicTacToe
+Code 
+# Initialise the board with numbers 1-9
+a = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+
+# Function to draw the game board
+def draw():
+    print("-------------")
+    print(f"| {a[1]} | {a[2]} | {a[3]} |")
+    print("-------------")
+    print(f"| {a[4]} | {a[5]} | {a[6]} |")
+    print("-------------")
+    print(f"| {a[7]} | {a[8]} | {a[9]} |")
+    print("-------------")
+
+
+# Function to check for a win or tie
+def check():
+    if (a[1] == a[2] == a[3] or a[4] == a[5] == a[6] or a[7] == a[8] == a[9]):
+        return 1  # Horizontal win
+    elif (a[1] == a[4] == a[7] or a[2] == a[5] == a[8] or a[3] == a[6] == a[9]):
+        return 1  # Vertical win
+    elif (a[1] == a[5] == a[9] or a[3] == a[5] == a[7]):
+        return 1  # Diagonal win
+    elif all(a[i] in ['X', 'O'] for i in range(1, 10)):
+        return 2  # Tie
+    else:
+        return 0  # Game continues
+
+
+# Main game function
+def main():
+    draw()
+    player = 0
+    result = 0
+
+
+    print("X is for Player 1 & O is for Player 2")
+    
+    while result == 0:
+        player += 1
+        mark = 'X' if player % 2 != 0 else 'O'
+
+
+        while True:
+            try:
+                ch = int(input(f"Player {1 if mark == 'X' else 2}: Enter Block Number: "))
+                if a[ch] != 'X' and a[ch] != 'O':
+                    a[ch] = mark
+                    break
+                else:
+                    print("Invalid Choice, block already taken.")
+            except (ValueError, IndexError):
+                print("Invalid input, please enter a number between 1 and 9.")
+
+
+        draw()
+        result = check()
+
+
+    if result == 1:
+        print(f"Congratulations Player {2 if player % 2 == 0 else 1} has won the game!")
+    else:
+        print("Tie")
+
+
+    draw()
+
+
+# Start the game
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Practical 3
+Aim : Write a Program to solve missionary and Cannibal problems.
+Code : 
+# Initialize variables
+im, ic = 3, 3  # Initial missionaries and cannibals on the right side
+fm, fc = 0, 0  # Final missionaries and cannibals on the left side
+flag = 0       # Flag to indicate the boat position (0: right side, 1: left side)
+select1 = 0    # To store the selected move
+
+
+
+
+# Function to display the current state of both banks and the boat
+def display(bpass1, bpass2):
+    print("\n\n", end="")
+    # Display left bank
+    for i in range(fm):
+        print(" M ", end="")
+    for i in range(fc):
+        print(" C ", end="")
+    
+    # Display boat and water
+    if flag == 0:
+        print(f"_____WATER_____<BO({bpass1}, {bpass2})AT>", end="")
+    else:
+        print(f"<BO({bpass1}, {bpass2})AT>_____WATER_____ ", end="")
+    
+    # Display right bank
+    for i in range(im):
+        print(" M ", end="")
+    for i in range(ic):
+        print(" C ", end="")
+    print()
+
+
+
+
+# Function to check if the game is won (all missionaries and cannibals are on the left side)
+def win():
+    return not (fc == 3 and fm == 3)
+
+
+# Function to implement the solution logic
+def solution():
+    global im, ic, fm, fc, flag, select1
+
+
+    while win():
+        if flag == 0:  # Boat is on the right side
+            # Select appropriate move
+            if select1 == 1:
+                display('C', ' ')
+                ic += 1
+            elif select1 == 2:
+                display('C', 'M')
+                ic += 1
+                im += 1
+            
+            # Logic for moving characters across the river
+            if ((im - 2) >= ic and (fm + 2) >= fc) or (im - 2) == 0:
+                im -= 2
+                select1 = 1
+                display('M', 'M')
+                flag = 1  # Move boat to left
+            elif (ic - 2) < im and (fm == 0 or (fc + 2) <= fm) or im == 0:
+                ic -= 2
+                select1 = 2
+                display('C', 'C')
+                flag = 1
+            else:
+                ic -= 1
+                im -= 1
+                select1 = 3
+                display('M', 'C')
+                flag = 1
+        
+        else:  # Boat is on the left side
+            # Select appropriate move
+            if select1 == 1:
+                display('M', 'M')
+                fm += 2
+            elif select1 == 2:
+                display('C', 'C')
+                fc += 2
+            elif select1 == 3:
+                display('M', 'C')
+                fm += 1
+                fc += 1
+            
+            # Logic for moving characters back across the river
+            if win():
+                if fc > 1 and fm == 0 or im == 0:
+                    fc -= 1
+                    select1 = 1
+                    display('C', ' ')
+                    flag = 0  # Move boat to right
+                elif (ic + 2) > im:
+                    fc -= 1
+                    fm -= 1
+                    select1 = 2
+                    display('C', 'M')
+                    flag = 0
+
+
+
+
+# Main function
+def main():
+    print("Missionaries and Cannibals")
+    display(' ', ' ')
+    solution()
+    display(' ', ' ')
+    print("\n\n")
+
+
+
+
+# Execute the main function
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Practical no 4 
+Aim : Write a program to solve tower of Hanoi
+Code : 
+def TOH(n, source, destination, auxiliary):
+     if n==1:
+          print("Move disk 1 from source",source,"to destination",destination)
+          return
+     TOH(n-1,source,auxiliary,destination)
+     print("Move disk",n,"from source",source,"to destination",destination)
+     TOH(n-1,auxiliary,destination,source)
+n=3
+TOH(n,'A','C','B')
+
+
+Practical 5
+Aim : Write a program which contains three predicates: male, female, parent. Make rules for following family relations: father, mother, grandfather, grandmother, brother, sister, uncle, aunt, nephew and niece, cousin.
+Code : 
+male(joe).
+male(jerry).
+male(sam).
+male(garry).
+female(juily).
+female(jen).
+female(samira).
+female(leeniz).
+parent(joe,juily).
+parent(joe,sam).
+parent(jerry,garry).
+parent(jerry,leeniz).
+parent(juily,garry).
+parent(juily,leeniz).
+parent(sam,samira).
+parent(jen,samira).
+grandparent(X,Y):-parent(X,Z),parent(Z,Y).
+grandfather(X,Y):-male(X),grandparent(X,Y).
+grandmother(X,Y):-female(X),grandparent(X,Y).
+father(X,Y):-male(X),parent(X,Y).
+mother(X,Y):-female(X),parent(X,Y).
+sibling(X,Y):-parent(Z,X),parent(Z,Y).
+sister(X,Y):-female(X),sibling(X,Y).
+brother(X,Y):-male(X),sibling(X,Z).
+uncle(X,Y):-parent(Z,Y),brother(X,Z).
+aunt(X,Y):-parent(Z,Y),sister(X,Z).
+cousin(X,Y):-parent(A,X),parent(B,Y),sibling(A,B).
+nephew(X,Y):-male(X),parent(Z,X),sibling(Y,Z).
+niece(X,Y):-female(X),parent(Z,X),sibling(Y,Z).
+ancestor(X,Y):-parent(X,Z),grandparent(Z,Y).
+
+
+Output : 
+?- grandparent(joe,garry).
+true .
+?- grandparent(joe,sam).
+false.
+?- grandfather(joe,jerry).
+false.
+?- grandmother(joe,garry).
+false.
+?- father(jerry,garry).
+false.
+?- father(juily,garry).
+false.
+?- mother(juily,leeniz).
+true.
+?- mother(sam,samira).
+false.
+?- sibling(garry,leeniz).
+true.
+
+
+
+
+
+
+
+
+
+
+
+
+Practical 6
+Aim: Write a program to solve a water jug Program.
+Code : 
+# Initialise global variables
+xcap = 0  # Capacity of Jug 1
+ycap = 0  # Capacity of Jug 2
+step = 0  # Step counter
+n = 0     # Target volume to measure
+
+
+# Function to solve the water jug problem
+def solve():
+    global step
+    x, y = 0, 0  # Initialize Jug 1 and Jug 2 as empty
+    print("\nStep\tJug 1\tJug 2")
+
+
+    while x != n:
+        if x == 0:
+            x = xcap  # Fill Jug 1 completely
+            step += 1
+            print(f"\nFilled Jug 1 completely")
+            print(f"{step}\t{x}\t{y}\n")
+
+
+        elif y == ycap:
+            y = 0  # Empty Jug 2 when it's full
+            step += 1
+            print(f"\nJug 2 is empty")
+            print(f"{step}\t{x}\t{y}\n")
+
+
+        else:
+            # Pour from Jug 1 to Jug 2
+            temp = min(x, ycap - y)
+            x -= temp
+            y += temp
+            step += 1
+            print(f"\nPoured from Jug 1 to Jug 2")
+            print(f"{step}\t{x}\t{y}\n")
+
+
+# Main function
+def main():
+    global xcap, ycap, n
+
+
+    # Get input from user
+    xcap = int(input("Enter the capacity of X jug: "))
+    ycap = int(input("\nEnter the capacity of Y jug: "))
+    n = int(input("\nEnter the number of litres to be measured: "))
+
+
+    # Call the solution function
+    solve()
+
+
+# Execute main function
+if __name__ == "__main__":
+    main()
+
+
+
+
+Practical 7
+Aim : Write a program for Alpha - Beta pruning.
+Code : 
+# Constants for the algorithm
+MAX, MIN = 100, -100
+
+
+# Function to find maximum of two numbers
+def max_value(a, b):
+    return a if a > b else b
+
+
+# Function to find minimum of two numbers
+def min_value(a, b):
+    return a if a < b else b
+
+
+# Minimax function with alpha-beta pruning
+def minimax(depth, nodeIndex, maximizingPlayer, values, alpha, beta):
+    # Base case: if depth is 3, return the value of the current node
+    if depth == 3:
+        return values[nodeIndex]
+
+
+    if maximizingPlayer:
+        best = MIN  # Initialize best as a very small value
+
+
+        # Recur for children (i.e., left and right subtrees)
+        for i in range(2):
+            val = minimax(depth + 1, nodeIndex * 2 + i, False, values, alpha, beta)
+            best = max_value(best, val)
+            alpha = max_value(alpha, best)
+
+
+            # Alpha Beta Pruning
+            if alpha >= beta:
+                break
+        return best
+
+
+    else:
+        best = MAX  # Initialize best as a very large value
+
+
+        # Recur for children (i.e., left and right subtrees)
+        for i in range(2):
+            val = minimax(depth + 1, nodeIndex * 2 + i, True, values, alpha, beta)
+            best = min_value(best, val)
+            beta = min_value(beta, best)
+
+
+            # Alpha Beta Pruning
+            if alpha >= beta:
+                break
+        return best
+
+
+# Main function to start the algorithm
+if __name__ == "__main__":
+    values = [3, 5, 6, 9, 1, 2, 0, -1]
+    print("The optimal value is:", minimax(0, 0, True, values, MIN, MAX))
+
+
+
+
+Practical 8
+Aim : Write a Program to simulate 4-Queen / N-Queen problem
+Code : 
+def print_board(board):
+     size = len(board)
+     for row in range(size):
+          for col in range(size):
+               if board[row] == col:
+                    print('Q', end=' ')
+               else:
+                    print('.', end=' ')
+          print()
+def is_safe(board, row, col):
+     for r in range(row):
+          if board[r] == col or \
+             board[r] - col == r - row or \
+             board[r] - col == row -r:
+               return False
+     return True
+
+
+def solve_nqueens_util(board, row):
+     size = len(board)
+     if row == size:
+          print_board(board)
+          print()
+          return True
+     
+     found_solution = False
+     for col in range(size):
+          if is_safe(board, row, col):
+               board[row] = col
+               if solve_nqueens_util(board, row + 1):
+                    found_solution = True
+               board[row] = -1 #backtrack
+               
+     return found_solution
+
+
+def solve_nqueens(size):
+     board = [-1] * size
+     if not solve_nqueens_util(board, 0):
+          print("No solution exists.")
+
+
+if __name__ == "__main__":
+     n = int(input("Enter n for the N-Queen problem :"))
+     solve_nqueens(n)
+
+
+
+
+
+
+
+
+Practical 9
+Aim : Write a Program to shuffle the deck of cards.
+Code :
+import itertools,random
+deck = list(itertools.product(range(1,14),["spade", "club", "diamond", "heart"]))
+random.shuffle(deck)
+for i in range(5):
+    print(deck[i][0],"of",deck[i][1])
+
+
+Practical 10
+Aim : WAP to derive the predicate of the following family tree.
+Code : 
+def parent(parent,child):
+    return f"{parent} is a parent of {child}"
+
+
+relationship=[
+    parent("James","Charles"),
+    parent("James","Elizabeth"),
+    parent("Charles","Catherine"),
+    parent("Charles","charlie"),
+    parent("Charles","John"),
+    parent("Elizabeth","Sophia"),
+    parent("Sophia","George"),
+    ]
+
+
+for relation in relationship:
+    print(relation)
